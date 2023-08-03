@@ -3,10 +3,10 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-import usb.core
+import time
 import os
 import storage
-import time
+import usb.core
 
 import adafruit_usb_host_mass_storage
 

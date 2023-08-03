@@ -28,7 +28,7 @@ Dependencies
 =============
 This driver depends on:
 
-* `Adafruit CircuitPython <https://github.com/adafruit/circuitpython>`_
+* `Adafruit CircuitPython 9+ <https://github.com/adafruit/circuitpython>`_
 
 Please ensure all dependencies are available on the CircuitPython filesystem.
 This is easily achieved by downloading
@@ -37,18 +37,8 @@ or individual libraries can be installed using
 `circup <https://github.com/adafruit/circup>`_.
 
 
-
-.. todo:: Describe the Adafruit product this library works with. For PCBs, you can also add the
-image from the assets folder in the PCB's GitHub repo.
-
-`Purchase one from the Adafruit shop <http://www.adafruit.com/products/>`_
-
 Installing from PyPI
 =====================
-.. note:: This library is not available on PyPI yet. Install documentation is included
-   as a standard element. Stay tuned for PyPI availability!
-
-.. todo:: Remove the above note if PyPI version is/will be available at time of release.
 
 On supported GNU/Linux systems like the Raspberry Pi, you can install the driver locally `from
 PyPI <https://pypi.org/project/adafruit-circuitpython-usb-host-mass-storage/>`_.
@@ -99,8 +89,51 @@ Or the following command to update an existing version:
 Usage Example
 =============
 
-.. todo:: Add a quick, simple example. It and other examples should live in the
-examples folder and be included in docs/examples.rst.
+Print basic information about a device and its first (and usually only) configuration.
+
+.. code-block:: python
+
+    import usb.core
+    import os
+    import storage
+    import time
+
+    from adafruit_usb_host_descriptors import *
+
+    DIR_IN = 0x80
+
+    while True:
+        print("searching for devices")
+        for device in usb.core.find(find_all=True):
+            print("pid", hex(device.idProduct))
+            print("vid", hex(device.idVendor))
+            print("man", device.manufacturer)
+            print("product", device.product)
+            print("serial", device.serial_number)
+            print("config[0]:")
+            config_descriptor = get_configuration_descriptor(device, 0)
+
+            i = 0
+            while i < len(config_descriptor):
+                descriptor_len = config_descriptor[i]
+                descriptor_type = config_descriptor[i + 1]
+                if descriptor_type == DESC_CONFIGURATION:
+                    config_value = config_descriptor[i + 5]
+                    print(f" value {config_value:d}")
+                elif descriptor_type == DESC_INTERFACE:
+                    interface_number = config_descriptor[i + 2]
+                    interface_class = config_descriptor[i + 5]
+                    interface_subclass = config_descriptor[i + 6]
+                    print(f" interface[{interface_number:d}] class {interface_class:02x} subclass {interface_subclass:02x}")
+                elif descriptor_type == DESC_ENDPOINT:
+                    endpoint_address = config_descriptor[i + 2]
+                    if endpoint_address & DIR_IN:
+                        print(f"  IN {endpoint_address:02x}")
+                    else:
+                        print(f"  OUT {endpoint_address:02x}")
+                i += descriptor_len
+            print()
+        time.sleep(5)
 
 Documentation
 =============
