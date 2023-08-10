@@ -56,7 +56,7 @@ from the data-out buffer and write them."""
 
 
 class USBMassStorage:
-    """CircuitPython BlockDevice backed by a USB mass storage device (aka thumb drive.)"""
+    """CircuitPython BlockDevice backed by a USB mass storage device (aka thumb drive)."""
 
     def __init__(self, device: usb.core.Device, lun=0):
         config_descriptor = adafruit_usb_host_descriptors.get_configuration_descriptor(
