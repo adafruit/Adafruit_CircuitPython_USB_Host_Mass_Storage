@@ -14,10 +14,14 @@ CircuitPython BlockDevice for USB mass storage devices
 
 import struct
 import time
-from typing import Optional
 import usb.core
 from micropython import const
 import adafruit_usb_host_descriptors
+
+try:
+    from typing import Optional
+except ImportError:
+    pass
 
 __version__ = "0.0.0+auto.0"
 __repo__ = (
