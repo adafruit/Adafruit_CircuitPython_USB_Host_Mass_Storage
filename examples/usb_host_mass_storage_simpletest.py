@@ -3,8 +3,9 @@
 #
 # SPDX-License-Identifier: Unlicense
 
-import time
 import os
+import time
+
 import storage
 import usb.core
 
@@ -33,7 +34,7 @@ print(l)
 
 if "hello.txt" in l:
     print("hello.txt:")
-    with open("/usb_drive/hello.txt", "r") as f:
+    with open("/usb_drive/hello.txt") as f:
         print(f.read())
 
 with open("/usb_drive/hello.txt", "w") as f:

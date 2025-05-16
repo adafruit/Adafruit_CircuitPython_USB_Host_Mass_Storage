@@ -14,9 +14,10 @@ CircuitPython BlockDevice for USB mass storage devices
 
 import struct
 import time
+
+import adafruit_usb_host_descriptors
 import usb.core
 from micropython import const
-import adafruit_usb_host_descriptors
 
 try:
     from typing import Optional
@@ -24,9 +25,7 @@ except ImportError:
     pass
 
 __version__ = "0.0.0+auto.0"
-__repo__ = (
-    "https://github.com/adafruit/Adafruit_CircuitPython_USB_Host_Mass_Storage.git"
-)
+__repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_USB_Host_Mass_Storage.git"
 
 # USB defines
 _DIR_OUT = const(0x00)
@@ -63,9 +62,7 @@ class USBMassStorage:
     """CircuitPython BlockDevice backed by a USB mass storage device (aka thumb drive)."""
 
     def __init__(self, device: usb.core.Device, lun=0):
-        config_descriptor = adafruit_usb_host_descriptors.get_configuration_descriptor(
-            device, 0
-        )
+        config_descriptor = adafruit_usb_host_descriptors.get_configuration_descriptor(device, 0)
 
         self.in_ep = 0
         self.out_ep = 0
@@ -91,8 +88,7 @@ class USBMassStorage:
                 if in_msc_interface:
                     msc_interface = interface_number
             elif (
-                descriptor_type == adafruit_usb_host_descriptors.DESC_ENDPOINT
-                and in_msc_interface
+                descriptor_type == adafruit_usb_host_descriptors.DESC_ENDPOINT and in_msc_interface
             ):
                 endpoint_address = config_descriptor[i + 2]
                 if endpoint_address & _DIR_IN:
@@ -191,9 +187,7 @@ class USBMassStorage:
         self._scsi_command(_DIR_IN, command, response)
 
         self.sector_count, self.block_size = struct.unpack(">II", response)
-        self.sector_count += (
-            1  # Response has the last valid number. Count is one greater.
-        )
+        self.sector_count += 1  # Response has the last valid number. Count is one greater.
 
     def readblocks(self, block_num: int, buf: bytearray) -> None:
         """Read data from block_num into buf"""
@@ -228,7 +222,6 @@ class USBMassStorage:
     def ioctl(self, operation: int, arg: Optional[int] = None) -> Optional[int]:
         """Perform an IOCTL operation"""
         # This is a standard interface so we need to take arg even though we ignore it.
-        # pylint: disable=unused-argument
         if operation == _MP_BLOCKDEV_IOCTL_BLOCK_COUNT:
             if not self.sector_count:
                 self._read_capacity()
